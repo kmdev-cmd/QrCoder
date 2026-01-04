@@ -18,7 +18,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     downloadLink.style.display = 'none';
 
     try {
-        const response = await fetch('/generate_qr', {
+        const response = await fetch('https://kmdev.pythonanywhere.com/generate_qr', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -49,7 +49,6 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     }
 });
 
-// Add click animation for download link
 document.getElementById('downloadLink').addEventListener('click', () => {
     const downloadBtn = document.getElementById('downloadLink');
     downloadBtn.style.animation = 'none';

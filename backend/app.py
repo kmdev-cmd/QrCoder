@@ -1,37 +1,34 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS
 import qrcode
 import io
 
 app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return send_file('../frontend/index.html')
-
-@app.route('/style.css')
-def style():
-    return send_file('../frontend/style.css')
-
-@app.route('/main.js')
-def main():
-    return send_file('../frontend/main.js')
+CORS(app)  # libera chamadas do frontend
 
 @app.route('/generate_qr', methods=['POST'])
 def generate_qr():
-    data = request.json.get('url')
-    if not data:
-        return {'error': 'No URL provided'}, 400
+    data = request.json.get('url') if request.is_json else None
 
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    if not data:
+        return jsonify({'error': 'No URL provided'}), 400
+
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=5
+    )
     qr.add_data(data)
     qr.make(fit=True)
-    img = qr.make_image(fill='black', back_color='white')
+
+    img = qr.make_image(fill_color='black', back_color='white')
 
     buf = io.BytesIO()
     img.save(buf, format='PNG')
     buf.seek(0)
 
-    return send_file(buf, mimetype='image/png')
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    return send_file(
+        buf,
+        mimetype='image/png',
+        as_attachment=False
+    )
