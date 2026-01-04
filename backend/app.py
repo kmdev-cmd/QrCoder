@@ -4,14 +4,7 @@ import qrcode
 import io
 
 app = Flask(__name__)
-
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=False,
-    methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"]
-)
+CORS(app)
 
 @app.route('/generate_qr', methods=['POST', 'OPTIONS'])
 def generate_qr():
@@ -27,7 +20,6 @@ def generate_qr():
     qr.make(fit=True)
 
     img = qr.make_image(fill_color='black', back_color='white')
-
     buf = io.BytesIO()
     img.save(buf, format='PNG')
     buf.seek(0)
