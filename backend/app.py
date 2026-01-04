@@ -4,12 +4,20 @@ import qrcode
 import io
 
 app = Flask(__name__)
-CORS(app)
+
+CORS(
+    app,
+    resources={
+        r"/generate_qr": {
+            "origins": "https://km-qr.netlify.app"
+        }
+    }
+)
 
 @app.route('/generate_qr', methods=['POST', 'OPTIONS'])
 def generate_qr():
     if request.method == 'OPTIONS':
-        return '', 204
+        return '', 204  # HTTP OK para o browser
 
     data = request.json.get('url') if request.is_json else None
     if not data:
@@ -20,6 +28,7 @@ def generate_qr():
     qr.make(fit=True)
 
     img = qr.make_image(fill_color='black', back_color='white')
+
     buf = io.BytesIO()
     img.save(buf, format='PNG')
     buf.seek(0)
